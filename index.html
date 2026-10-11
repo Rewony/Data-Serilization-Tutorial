@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormatMaster | XML • YAML • JSON Pratik & Laboratuvarı</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts & Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- js-yaml library -->
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <!-- canvas-confetti for success celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              json: '#06b6d4',
+              yaml: '#10b981',
+              xml: '#f59e0b',
+              accent: '#6366f1'
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-slate-900">
+
+  <!-- ======================================================== -->
+  <!-- Header / Navigation Bar -->
+  <!-- ======================================================== -->
+  <header class="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Logo -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-emerald-400 p-0.5 shadow-lg shadow-cyan-500/20">
+          <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-emerald-400 font-mono text-lg">
+            { }
+          </div>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold tracking-tight flex items-center gap-2">
+            <span>FormatMaster</span>
+            <span class="text-[10px] font-mono tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 uppercase font-semibold">Pro</span>
+          </h1>
+          <p class="text-xs text-slate-400 hidden sm:block">JSON • YAML • XML Pratik ve Öğrenme Laboratuvarı</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1 sm:gap-2">
+        <button data-nav-tab="challenges" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold border transition flex items-center gap-2 bg-cyan-500/10 text-cyan-400 border-cyan-500/40">
+          <i data-lucide="crosshair" class="w-4 h-4"></i>
+          <span>Görevler</span>
+        </button>
+        <button data-nav-tab="guides" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold border transition flex items-center gap-2 text-slate-400 border-transparent hover:text-slate-200 hover:bg-slate-800/50">
+          <i data-lucide="graduation-cap" class="w-4 h-4 text-emerald-400"></i>
+          <span>Konu Anlatımı</span>
+        </button>
+        <button data-nav-tab="sandbox" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold border transition flex items-center gap-2 text-slate-400 border-transparent hover:text-slate-200 hover:bg-slate-800/50">
+          <i data-lucide="shuffle" class="w-4 h-4"></i>
+          <span>Dönüştürücü & Lab</span>
+        </button>
+        <button data-nav-tab="tree" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold border transition flex items-center gap-2 text-slate-400 border-transparent hover:text-slate-200 hover:bg-slate-800/50">
+          <i data-lucide="network" class="w-4 h-4"></i>
+          <span>Ağaç Görünümü</span>
+        </button>
+        <button data-nav-tab="cheatsheet" class="px-3.5 py-1.5 rounded-lg text-sm font-semibold border transition flex items-center gap-2 text-slate-400 border-transparent hover:text-slate-200 hover:bg-slate-800/50">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+          <span>Rehber & Farklar</span>
+        </button>
+      </nav>
+
+      <!-- Stats / XP -->
+      <div class="hidden md:flex items-center gap-3">
+        <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+          <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
+          <span class="text-xs text-slate-400">Görev:</span>
+          <span id="stat-solved-count" class="text-xs font-bold text-emerald-400 font-mono">0 / 18</span>
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+          <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+          <span id="stat-score" class="text-xs font-bold text-amber-400 font-mono">0 XP</span>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ======================================================== -->
+  <!-- MAIN CONTAINER -->
+  <!-- ======================================================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full flex flex-col">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: INTERACTIVE CHALLENGES (MEYDAN OKUMALAR) -->
+    <!-- ======================================================== -->
+    <div data-tab-panel="challenges" class="flex flex-col lg:flex-row gap-6 flex-1">
+      
+      <!-- Sol Panel: Görev Listesi & Filtreler -->
+      <div class="w-full lg:w-80 flex flex-col gap-4">
+        <div class="glass-panel p-4 rounded-xl flex flex-col gap-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <i data-lucide="list-checks" class="w-4 h-4 text-cyan-400"></i>
+              Meydan Okumalar
+            </h2>
+            <span class="text-xs text-slate-500 font-mono">45 Egzersiz (15'er Adet)</span>
+          </div>
+
+          <!-- Format Filtresi -->
+          <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-lg border border-slate-800/80 text-xs">
+            <button data-filter-cat="all" class="flex-1 py-1 rounded font-medium bg-cyan-500 text-slate-900 transition text-center">Hepsi (45)</button>
+            <button data-filter-cat="json" class="flex-1 py-1 rounded font-medium text-slate-400 hover:text-slate-200 transition text-center">JSON (15)</button>
+            <button data-filter-cat="yaml" class="flex-1 py-1 rounded font-medium text-slate-400 hover:text-slate-200 transition text-center">YAML (15)</button>
+            <button data-filter-cat="xml" class="flex-1 py-1 rounded font-medium text-slate-400 hover:text-slate-200 transition text-center">XML (15)</button>
+          </div>
+
+          <!-- Seviye Filtresi -->
+          <div class="flex items-center gap-1 text-[11px]">
+            <button data-filter-lvl="all" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">Tüm Seviyeler</button>
+            <button data-filter-lvl="beginner" class="px-2 py-0.5 rounded bg-slate-800 text-emerald-400 hover:bg-slate-700">Başlangıç</button>
+            <button data-filter-lvl="intermediate" class="px-2 py-0.5 rounded bg-slate-800 text-amber-400 hover:bg-slate-700">Orta</button>
+            <button data-filter-lvl="advanced" class="px-2 py-0.5 rounded bg-slate-800 text-rose-400 hover:bg-slate-700">İleri</button>
+          </div>
+
+          <!-- Görev Listesi -->
+          <div id="challenge-list" class="flex flex-col gap-1.5 max-h-[550px] overflow-y-auto pr-1">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Sağ Panel: Görev Detayı & Kod Editörü -->
+      <div class="flex-1 flex flex-col gap-4">
+        
+        <!-- Üst Başlık Kartı -->
+        <div class="glass-panel p-5 rounded-xl flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span id="challenge-category" class="px-2 py-0.5 rounded text-xs font-mono font-bold uppercase bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">JSON</span>
+              <span id="challenge-level" class="px-2 py-0.5 rounded text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">BAŞLANGIÇ</span>
+              <h2 id="challenge-title" class="text-lg font-bold text-slate-100">Görev Başlığı</h2>
+            </div>
+            
+            <div class="flex items-center gap-2">
+              <button id="btn-show-solution" class="text-xs px-3 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 transition flex items-center gap-1.5">
+                <i data-lucide="eye" class="w-3.5 h-3.5"></i> Çözümü Gör
+              </button>
+              <button id="btn-reset-challenge" class="text-xs px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Sıfırla
+              </button>
+            </div>
+          </div>
+
+          <!-- Açıklama -->
+          <p id="challenge-desc" class="text-sm text-slate-300 leading-relaxed">
+            Görev açıklaması yükleniyor...
+          </p>
+
+          <!-- İpuçları -->
+          <details class="group bg-slate-950/60 border border-slate-800/80 rounded-lg p-3 text-xs">
+            <summary class="font-semibold text-cyan-400 cursor-pointer flex items-center justify-between select-none">
+              <span class="flex items-center gap-2">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i> İpuçları & Püf Noktaları
+              </span>
+              <span class="text-slate-500 group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <ul id="challenge-hints" class="mt-2.5 space-y-1.5 list-disc list-inside text-slate-400 pl-1">
+              <!-- Dynamically populated -->
+            </ul>
+          </details>
+        </div>
+
+        <!-- Kod Editörü Alanı -->
+        <div class="glass-panel p-4 rounded-xl flex flex-col gap-3 flex-1">
+          <div class="flex items-center justify-between text-xs text-slate-400 pb-1">
+            <span class="font-mono flex items-center gap-1.5">
+              <i data-lucide="code-2" class="w-4 h-4 text-cyan-400"></i> Kod Düzenleyici (Tab tuşu 2 boşluk bırakır)
+            </span>
+            <span class="text-slate-500">Otomatik Doğrulayıcı Aktif</span>
+          </div>
+
+          <!-- Editör Konteyneri -->
+          <div class="editor-container h-80 sm:h-96">
+            <div id="challenge-lines" class="editor-line-numbers">1</div>
+            <textarea id="challenge-code" class="editor-textarea" spellcheck="false" placeholder="Kodunuzu buraya yazın veya düzeltin..."></textarea>
+          </div>
+
+          <!-- Geri Bildirim Alanı -->
+          <div id="challenge-feedback" class="hidden p-4 rounded-lg text-sm">
+            <!-- Dynamically populated feedback -->
+          </div>
+
+          <!-- Alt Aksiyon Barı -->
+          <div class="flex items-center justify-between pt-2">
+            <div class="text-xs text-slate-500">
+              Kısayol: Kodunuzu tamamladıktan sonra butona basarak test edin.
+            </div>
+            <div class="flex items-center gap-3">
+              <button id="btn-next-challenge" class="hidden px-4 py-2 rounded-lg font-bold text-sm bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+                <span>Sonraki Görev</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+              <button id="btn-run-challenge" class="px-5 py-2 rounded-lg font-bold text-sm bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 transition flex items-center gap-2 shadow-lg shadow-cyan-500/25">
+                <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                <span>Kontrol Et & Gönder</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB: LEARNING GUIDES & TUTORIALS (KONU ANLATIMI) -->
+    <!-- ======================================================== -->
+    <div data-tab-panel="guides" class="hidden flex flex-col gap-5 flex-1">
+      
+      <!-- Kılavuz Üst Format Seçim Çubuğu -->
+      <div class="glass-panel p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+          <button id="guide-btn-json" class="guide-nav-tab px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm shadow-cyan-500/20">
+            <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+            <span>🔵 1. JSON Konu Anlatımı</span>
+          </button>
+          <button id="guide-btn-yaml" class="guide-nav-tab px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-transparent">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span>🟢 2. YAML Konu Anlatımı</span>
+          </button>
+          <button id="guide-btn-xml" class="guide-nav-tab px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 border border-transparent">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span>🟠 3. XML Konu Anlatımı</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs text-slate-400">
+          <i data-lucide="info" class="w-4 h-4 text-cyan-400"></i>
+          <span>Bir formatı seçip detaylı kurallarını inceleyin, ardından doğrudan egzersizine geçin.</span>
+        </div>
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- 1. JSON REHBERİ (PANEL) -->
+      <!-- ==================================================== -->
+      <div id="guide-panel-json" class="flex flex-col gap-6">
+        
+        <!-- Üst Başlık -->
+        <div class="glass-panel p-6 rounded-xl flex flex-wrap items-center justify-between gap-4 border-l-4 border-cyan-400">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">FORMAT 01</span>
+              <h2 class="text-xl font-bold text-slate-100">JSON (JavaScript Object Notation) Konu Anlatımı</h2>
+            </div>
+            <p class="text-xs text-slate-400">Modern webin, REST API'lerinin ve NoSQL veritabanlarının evrensel veri taşıma dili</p>
+          </div>
+          <button onclick="window.FormatNavigateToChallenge(0)" class="px-4 py-2 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition flex items-center gap-2 shadow-lg shadow-cyan-500/20">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+            <span>JSON Egzersizine Başla (Görev 1)</span>
+          </button>
+        </div>
+
+        <!-- Bölüm 1: JSON Nedir ve Neden Doğdu? -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i>
+            <span>1. JSON Nedir ve Neden XML'in Yerini Aldı?</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            JSON, 2000'li yılların başında Douglas Crockford tarafından popülerleştirilmiş, hafif (lightweight) ve metin tabanlı bir veri değişim formatıdır. İsmi JavaScript'ten gelse de tamamen <strong>dilden bağımsızdır</strong> (Python, Java, C#, Go, PHP gibi tüm dillerde yerel olarak desteklenir).
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-cyan-400">🚀 Hafif ve Hızlı:</strong>
+              <span class="text-slate-400">XML'deki gibi açılış ve kapanış etiketleri tekrarlanmaz, dosya boyutu çok daha küçüktür ve ağ üzerinden hızlı aktarılır.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-cyan-400">⚡ Kolay Ayrıştırma:</strong>
+              <span class="text-slate-400">JavaScript içinde <code>JSON.parse()</code> ile tek satırda bellek nesnesine dönüştürülür. Karmaşık DOM tarayıcıları gerektirmez.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-cyan-400">🌐 Standart Kullanım:</strong>
+              <span class="text-slate-400">Günümüzde RESTful API'lerin %95'i veri alışverişinde JSON formatını kullanır.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bölüm 2: Desteklenen 6 Veri Tipi -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+            <span>2. JSON'da Geçerli Olan 6 Temel Veri Tipi</span>
+          </h3>
+          <p class="text-xs text-slate-300">
+            JSON çok katı bir spesifikasyona sahiptir. Yalnızca aşağıdaki 6 veri tipini tanır. Bunların dışındaki hiçbir tip (fonksiyonlar, undefined, regex vb.) bulunamaz:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs font-mono pt-1">
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+              <span class="text-amber-300 font-bold font-sans">1. String (Metin)</span>
+              <span class="text-slate-300">"Ahmet Yılmaz"</span>
+              <span class="text-[11px] font-sans text-slate-500">Mutlaka ÇİFT TIRNAK içinde yazılır.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+              <span class="text-purple-300 font-bold font-sans">2. Number (Sayı)</span>
+              <span class="text-slate-300">42 veya 19.99</span>
+              <span class="text-[11px] font-sans text-slate-500">Tamsayı veya ondalıklı sayı olabilir.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+              <span class="text-rose-300 font-bold font-sans">3. Boolean (Mantıksal)</span>
+              <span class="text-slate-300">true veya false</span>
+              <span class="text-[11px] font-sans text-slate-500">Küçük harfle yazılır (True/False yanlıştır).</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+              <span class="text-slate-300 font-bold font-sans">4. Null (Boşluk)</span>
+              <span class="text-slate-300">null</span>
+              <span class="text-[11px] font-sans text-slate-500">Değerin olmadığını belirtir.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+              <span class="text-cyan-300 font-bold font-sans">5. Object (Nesne)</span>
+              <span class="text-slate-300">{ "rol": "admin" }</span>
+              <span class="text-[11px] font-sans text-slate-500">Süslü parantez içinde anahtar-değer ikilileri.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1">
+              <span class="text-emerald-300 font-bold font-sans">6. Array (Dizi / Liste)</span>
+              <span class="text-slate-300">[ "elma", "armut" ]</span>
+              <span class="text-[11px] font-sans text-slate-500">Köşeli parantez içinde sıralı öğeler.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bölüm 3: Sözdizim Kuralları & Kritik Hatalar (Doğru vs Yanlış) -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-4">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+            <span>3. Kritik JSON Sözdizim Kuralları & Sık Yapılan Hatalar</span>
+          </h3>
+
+          <!-- Kural 1 -->
+          <div>
+            <h4 class="text-xs font-bold text-slate-200 mb-2 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Kural A: Çift Tırnak Şartı (Tek Tırnak Geçersizdir!)
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+              <div class="p-3.5 rounded-lg bg-rose-950/30 border border-rose-500/40 text-rose-300">
+                <div class="text-[11px] font-bold text-rose-400 mb-1">❌ YANLIŞ</div>
+                <pre>{ 'kullanici': 'ahmet', age: 25 }</pre>
+                <p class="font-sans text-[11px] text-rose-400/80 mt-1.5">Tek tırnaklar (') veya tırnaksız nesne anahtarları (age) kesinlikle GEÇERSİZDİR.</p>
+              </div>
+              <div class="p-3.5 rounded-lg bg-emerald-950/30 border border-emerald-500/40 text-emerald-300">
+                <div class="text-[11px] font-bold text-emerald-400 mb-1">✅ DOĞRU</div>
+                <pre>{ "kullanici": "ahmet", "age": 25 }</pre>
+                <p class="font-sans text-[11px] text-emerald-400/80 mt-1.5">Tüm anahtarlar ve tüm metin değerler çift tırnak (") içine alınmalıdır.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kural 2 -->
+          <div>
+            <h4 class="text-xs font-bold text-slate-200 mb-2 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Kural B: Sonda Fazla Virgül (Trailing Comma) Yasağı
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
+              <div class="p-3.5 rounded-lg bg-rose-950/30 border border-rose-500/40 text-rose-300">
+                <div class="text-[11px] font-bold text-rose-400 mb-1">❌ YANLIŞ</div>
+                <pre>[ "elma", "armut", "muz", ]</pre>
+                <p class="font-sans text-[11px] text-rose-400/80 mt-1.5">JavaScript tolerans gösterse bile standart JSON'da son elemandan sonra virgül koyulamaz.</p>
+              </div>
+              <div class="p-3.5 rounded-lg bg-emerald-950/30 border border-emerald-500/40 text-emerald-300">
+                <div class="text-[11px] font-bold text-emerald-400 mb-1">✅ DOĞRU</div>
+                <pre>[ "elma", "armut", "muz" ]</pre>
+                <p class="font-sans text-[11px] text-emerald-400/80 mt-1.5">Virgül yalnızca elemanların arasına konulur; en sondaki öğeden sonra virgül bırakılmaz.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kural 3 -->
+          <div>
+            <h4 class="text-xs font-bold text-slate-200 mb-2 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Kural C: Yorum Satırları Desteklenmez
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              JSON saf veri taşıma amacıyla tasarlandığından yorum satırlarına (<code class="text-rose-400 font-mono">// yorum</code> veya <code class="text-rose-400 font-mono">/* yorum */</code>) izin vermez. Yorum satırı eklerseniz tüm JSON ayrıştırıcıları hata verir.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bölüm 4: Gerçek Dünya REST API Örneği -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="code" class="w-4 h-4 text-cyan-400"></i>
+            <span>4. Kusursuz Bir JSON Örneği</span>
+          </h3>
+          <pre class="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-cyan-300 overflow-x-auto leading-relaxed">{
+  "kullanici_id": 1042,
+  "ad": "Zeynep Kaya",
+  "aktif": true,
+  "roller": ["muhendis", "admin"],
+  "iletisim": {
+    "email": "zeynep@example.com",
+    "telefon": null
+  }
+}</pre>
+        </div>
+
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- 2. YAML REHBERİ (PANEL) -->
+      <!-- ==================================================== -->
+      <div id="guide-panel-yaml" class="hidden flex flex-col gap-6">
+        
+        <!-- Üst Başlık -->
+        <div class="glass-panel p-6 rounded-xl flex flex-wrap items-center justify-between gap-4 border-l-4 border-emerald-400">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">FORMAT 02</span>
+              <h2 class="text-xl font-bold text-slate-100">YAML (YAML Ain't Markup Language) Konu Anlatımı</h2>
+            </div>
+            <p class="text-xs text-slate-400">DevOps, Docker, Kubernetes, Ansible ve CI/CD otomasyonunun vazgeçilmez konfigürasyon dili</p>
+          </div>
+          <button onclick="window.FormatNavigateToChallenge(15)" class="px-4 py-2 rounded-lg text-xs font-bold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+            <span>YAML Egzersizine Başla (Görev 16)</span>
+          </button>
+        </div>
+
+        <!-- Bölüm 1: YAML Nedir? -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+            <span>1. YAML Nedir ve Neden Tercih Edilir?</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            YAML, insan gözü için <strong>maksimum okunabilirlik</strong> sağlamak amacıyla tasarlanmış bir veri serileştirme standardıdır. Parantez veya etiket kalabalığı yerine sadece <strong>boşluklara (indentation)</strong> dayalı bir hiyerarşi kurar.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-emerald-400">👁️ Temiz ve Ferah:</strong>
+              <span class="text-slate-400">Süslü parantez ({}), tırnak işaretleri ve virgüller zorunlu değildir. Kod son derece sade görünür.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-emerald-400">💬 Yorum Satırları Var:</strong>
+              <span class="text-slate-400">JSON'ın aksine <code>#</code> işareti ile istediğiniz yere açıklama satırları ekleyebilirsiniz.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-emerald-400">🐳 DevOps Standartı:</strong>
+              <span class="text-slate-400">Kubernetes pod tanımları, Docker Compose, GitHub Actions iş akışları tamamen YAML ile yazılır.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bölüm 2: ALTIN KURAL: TAB YASAKTIR -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3 border border-rose-500/30 bg-rose-950/20">
+          <h3 class="text-sm font-bold text-rose-300 flex items-center gap-2 border-b border-rose-500/30 pb-2.5">
+            <i data-lucide="slash" class="w-4 h-4 text-rose-400"></i>
+            <span>2. YAML'ın En Katı Kuralı: TAB TUŞU KESİNLİKLE YASAKTIR!</span>
+          </h3>
+          <p class="text-xs text-rose-200 leading-relaxed">
+            YAML spesifikasyonunda TAB karakteri (<code>\t</code>) <strong>sözdizim hatasıdır</strong>. Girintileme (indentation) yaparken klavyedeki TAB tuşuna basmamalı, yalnızca <strong>BOŞLUK (Space)</strong> tuşunu kullanmalısınız. Endüstriyel standart her alt seviye için <strong>2 boşluk</strong>tur.
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono pt-1">
+            <div class="p-3 rounded-lg bg-slate-900 border border-rose-500/40 text-rose-300">
+              <div class="text-[11px] font-bold text-rose-400 mb-1">❌ YANLIŞ (TAB veya Eşitsiz Boşluk)</div>
+              <pre>server:\n\tport: 8080    # TAB kullanıldı (HATA!)\n  host: localhost</pre>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900 border border-emerald-500/40 text-emerald-300">
+              <div class="text-[11px] font-bold text-emerald-400 mb-1">✅ DOĞRU (2 Boşluk Standart)</div>
+              <pre>server:\n  port: 8080    # 2 boşluk bırakıldı\n  host: localhost</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bölüm 3: Temel Sözdizim Kuralları -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-4">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+            <span>3. Temel YAML Sözdizim Elemanları</span>
+          </h3>
+
+          <div class="space-y-4 text-xs text-slate-300">
+            <!-- 1. İki nokta boşluğu -->
+            <div>
+              <strong class="text-emerald-400 block mb-1">A. İki Nokta Üst Üste Sonrası Boşluk Kuralı:</strong>
+              Anahtar isminden sonra iki nokta koyduktan sonra <strong>mutlaka en az 1 boşluk</strong> bırakmalısınız:
+              <div class="mt-1 font-mono text-[11px]">
+                <span class="text-rose-400">port:80</span> ❌ HATALIDIR! &nbsp;|&nbsp; 
+                <span class="text-emerald-400">port: 80</span> ✅ DOĞRUDUR.
+              </div>
+            </div>
+
+            <!-- 2. Listeler -->
+            <div>
+              <strong class="text-emerald-400 block mb-1">B. Listeler (Diziler):</strong>
+              Liste elemanları tire (<code>-</code>) ve bir boşluk ile yazılır:
+              <pre class="p-3 rounded-lg bg-slate-950 border border-slate-800 text-emerald-300 font-mono mt-1">roller:\n  - yonetici\n  - gelistirici\n  - test_uzmani</pre>
+            </div>
+
+            <!-- 3. Çok Satırlı Metinler -->
+            <div>
+              <strong class="text-emerald-400 block mb-1">C. Çok Satırlı Metinler (| vs >):</strong>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1 font-mono text-[11px]">
+                <div class="p-2.5 rounded bg-slate-950 border border-slate-800">
+                  <span class="text-cyan-300 font-bold block mb-1">| (Literal Blok - Satırları Korur):</span>
+                  metin: |<br>&nbsp;&nbsp;Satır 1 aynen kalır.<br>&nbsp;&nbsp;Satır 2 alt satırda kalır.
+                </div>
+                <div class="p-2.5 rounded bg-slate-950 border border-slate-800">
+                  <span class="text-amber-300 font-bold block mb-1">> (Folded Blok - Birleştirir):</span>
+                  metin: ><br>&nbsp;&nbsp;Bu iki satır tek bir<br>&nbsp;&nbsp;uzun cümle olarak birleşir.
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. Norveç Tuzağı -->
+            <div class="p-3.5 rounded-lg bg-amber-950/30 border border-amber-500/30">
+              <strong class="text-amber-300 block mb-1 flex items-center gap-1.5">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                ⚠️ Meşhur "Norveç Tuzağı" (The Norway Problem):
+              </strong>
+              <p class="text-slate-300 leading-relaxed">
+                YAML 1.1 spesifikasyonunda <code>yes</code>, <code>no</code>, <code>on</code>, <code>off</code> kelimeleri otomatik olarak boolean sayılır. Bir ülke listesinde Norveç'in ISO kodu olan <code class="text-amber-300">NO</code> yazarsanız, YAML bunu boolean <code class="text-rose-400">false</code> yapar! Bu nedenle bu tür değerleri daima tırnak içine almalısınız: <code class="text-emerald-300">"NO"</code>.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Bölüm 4: Docker Compose Örneği -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i>
+            <span>4. Kusursuz Bir YAML Örneği (Docker Compose)</span>
+          </h3>
+          <pre class="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-300 overflow-x-auto leading-relaxed">version: "3.8"
+services:
+  web_api:
+    image: node:18-alpine
+    container_name: backend_servisi
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DB_PORT=5432</pre>
+        </div>
+
+      </div>
+
+      <!-- ==================================================== -->
+      <!-- 3. XML REHBERİ (PANEL) -->
+      <!-- ==================================================== -->
+      <div id="guide-panel-xml" class="hidden flex flex-col gap-6">
+        
+        <!-- Üst Başlık -->
+        <div class="glass-panel p-6 rounded-xl flex flex-wrap items-center justify-between gap-4 border-l-4 border-amber-400">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">FORMAT 03</span>
+              <h2 class="text-xl font-bold text-slate-100">XML (eXtensible Markup Language) Konu Anlatımı</h2>
+            </div>
+            <p class="text-xs text-slate-400">Hiyerarşik, katı kurallı ve kendi veri modelini kendi etiketleriyle tanımlayan standart</p>
+          </div>
+          <button onclick="window.FormatNavigateToChallenge(30)" class="px-4 py-2 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition flex items-center gap-2 shadow-lg shadow-amber-500/20">
+            <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+            <span>XML Egzersizine Başla (Görev 31)</span>
+          </button>
+        </div>
+
+        <!-- Bölüm 1: XML Nedir? -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="book-open" class="w-4 h-4 text-amber-400"></i>
+            <span>1. XML Nedir ve Nerelerde Kullanılır?</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            XML, 1996 yılında W3C tarafından standartlaştırılmış etiket tabanlı (markup) bir meta dildir. HTML verinin <em>nasıl görüneceğini</em> tanımlarken (örneğin <code>&lt;b&gt;kalın&lt;/b&gt;</code>), XML verinin <em>ne olduğunu</em> tanımlar (örneğin <code>&lt;fiyat&gt;150&lt;/fiyat&gt;</code>).
+          </p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-amber-400">📻 RSS ve Podcast:</strong>
+              <span class="text-slate-400">İnternetteki blog ve haber yayınları ile Spotify/Apple podcast akışları XML (RSS 2.0) kullanır.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-amber-400">📱 Android Uygulamaları:</strong>
+              <span class="text-slate-400">Android uygulama arayüzleri ve manifestoları (<code>AndroidManifest.xml</code>) XML tabanlıdır.</span>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/80 border border-slate-800 flex flex-col gap-1">
+              <strong class="text-amber-400">🏦 Kurumsal & Finans:</strong>
+              <span class="text-slate-400">Bankacılık SOAP servisleri ve e-Fatura standartları çok katı veri doğrulaması için XML kullanır.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bölüm 2: XML'in 3 Katı Kuralı -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+            <span>2. XML'in 3 Katı Sözdizim Kuralı</span>
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs pt-1">
+            <div class="p-3.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1.5">
+              <span class="text-amber-300 font-bold">1. Tek Kök Eleman (Single Root):</span>
+              <span class="text-slate-300">Bir XML belgesinde en dışta MUTLAKA ve SADECE tek bir ana etiket olmalıdır. Yan yana iki ayrı ana kök etiket bulunamaz!</span>
+            </div>
+            <div class="p-3.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1.5">
+              <span class="text-amber-300 font-bold">2. Eksiksiz Kapanış:</span>
+              <span class="text-slate-300">Açılan her etiket mutlaka kapatılmalıdır: <code>&lt;etiket&gt;...&lt;/etiket&gt;</code> veya kendi kendine kapanan <code>&lt;etiket/&gt;</code>.</span>
+            </div>
+            <div class="p-3.5 rounded-lg bg-slate-900 border border-slate-800 flex flex-col gap-1.5">
+              <span class="text-amber-300 font-bold">3. Büyük/Küçük Harf Duyarlılığı:</span>
+              <span class="text-slate-300"><code>&lt;Kitap&gt;</code> ile <code>&lt;/kitap&gt;</code> eşleşmez! Açılış ve kapanış harfleri birebir aynı olmalıdır.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bölüm 3: Nitelik vs Eleman ve CDATA -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-4">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="code-2" class="w-4 h-4 text-amber-400"></i>
+            <span>3. Nitelik (Attribute) vs Eleman ve CDATA Blokları</span>
+          </h3>
+
+          <div class="space-y-4 text-xs text-slate-300">
+            <!-- Nitelik vs Eleman -->
+            <div>
+              <strong class="text-amber-300 block mb-1">A. Nitelik (Attribute) vs Eleman (Element) Ayrımı:</strong>
+              <p class="leading-relaxed mb-2">Genel kabul görmüş kural: Verinin kimliği ve meta bilgileri nitelikte, taşınan asıl veri ise eleman etiketlerinde saklanır:</p>
+              <pre class="p-3 rounded-lg bg-slate-950 border border-slate-800 text-amber-300 font-mono text-xs">&lt;kitap id="49" kategori="Roman"&gt;   &lt;!-- id ve kategori niteliktir (attribute) --&gt;
+  &lt;baslik&gt;Nutuk&lt;/baslik&gt;            &lt;!-- baslik bir elemandır (element) --&gt;
+  &lt;yazar&gt;Mustafa Kemal Atatürk&lt;/yazar&gt;
+&lt;/kitap&gt;</pre>
+            </div>
+
+            <!-- CDATA -->
+            <div>
+              <strong class="text-amber-300 block mb-1">B. CDATA (Character Data) Bloğu ile Ham Kod Saklama:</strong>
+              <p class="leading-relaxed mb-2">
+                XML içinde <code>&lt;</code>, <code>&gt;</code> veya <code>&amp;</code> karakterleri bulunursa ayrıştırıcı bunları yeni etiket sanıp çöker. Kod veya ham metin saklamak için <code>&lt;![CDATA[ ... ]]&gt;</code> kullanılır:
+              </p>
+              <pre class="p-3 rounded-lg bg-slate-950 border border-slate-800 text-amber-300 font-mono text-xs">&lt;script&gt;
+  &lt;![CDATA[
+    if (kullaniciPuan &lt; 50 &amp;&amp; seviye &gt; 1) {
+      alert("Hata yok, CDATA koruyor!");
+    }
+  ]]&gt;
+&lt;/script&gt;</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bölüm 4: Gerçek Dünya XML Örneği -->
+        <div class="glass-panel p-6 rounded-xl flex flex-col gap-3">
+          <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2 border-b border-slate-800 pb-2.5">
+            <i data-lucide="code" class="w-4 h-4 text-amber-400"></i>
+            <span>4. Kusursuz Bir XML Örneği (RSS Akışı)</span>
+          </h3>
+          <pre class="p-4 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-amber-300 overflow-x-auto leading-relaxed">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;rss version="2.0"&gt;
+  &lt;channel&gt;
+    &lt;title&gt;Yazılım Bülteni&lt;/title&gt;
+    &lt;link&gt;https://example.com&lt;/link&gt;
+    &lt;item&gt;
+      &lt;title&gt;JSON vs YAML vs XML Karşılaştırması&lt;/title&gt;
+      &lt;author&gt;yazar@example.com&lt;/author&gt;
+      &lt;pubDate&gt;Sun, 11 Oct 2026&lt;/pubDate&gt;
+    &lt;/item&gt;
+  &lt;/channel&gt;
+&lt;/rss&gt;</pre>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: LIVE CONVERTER & SANDBOX (CANLI DÖNÜŞTÜRÜCÜ) -->
+    <!-- ======================================================== -->
+    <div data-tab-panel="sandbox" class="hidden flex flex-col gap-4 flex-1">
+      
+      <!-- Kontrol Araç Çubuğu -->
+      <div class="glass-panel p-4 rounded-xl flex flex-wrap items-center justify-between gap-4">
+        
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Hazır Şablonlar -->
+          <div class="flex items-center gap-2">
+            <label class="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i> Hazır Şablon:
+            </label>
+            <select id="template-select" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-1.5 outline-none focus:border-cyan-500">
+              <option value="">-- Bir Şablon Seçin --</option>
+              <option value="api_user">🚀 REST API Kullanıcı Profili (JSON)</option>
+              <option value="docker">🐳 Docker Compose Yapılandırması (YAML)</option>
+              <option value="ecommerce">📦 E-Ticaret Sipariş Özeti (JSON)</option>
+              <option value="xml_rss">📰 RSS / XML Haber Beslemesi (XML)</option>
+            </select>
+          </div>
+
+          <div class="h-6 w-[1px] bg-slate-800 hidden sm:block"></div>
+
+          <!-- Format Seçiciler -->
+          <div class="flex items-center gap-2">
+            <select id="source-format-select" class="bg-slate-900 border border-cyan-500/40 text-cyan-300 font-mono text-xs font-bold rounded-lg px-3 py-1.5 outline-none">
+              <option value="json">JSON</option>
+              <option value="yaml">YAML</option>
+              <option value="xml">XML</option>
+            </select>
+
+            <button id="btn-swap-formats" title="Kaynak ve Hedef Formatı Yer Değiştir" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">
+              <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+            </button>
+
+            <select id="target-format-select" class="bg-slate-900 border border-emerald-500/40 text-emerald-300 font-mono text-xs font-bold rounded-lg px-3 py-1.5 outline-none">
+              <option value="yaml">YAML</option>
+              <option value="json">JSON</option>
+              <option value="xml">XML</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Hızlı İşlem Butonları -->
+        <div class="flex items-center gap-2">
+          <button id="btn-prettify-source" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5">
+            <i data-lucide="wand-2" class="w-3.5 h-3.5 text-cyan-400"></i> Biçimlendir
+          </button>
+          <button id="btn-minify-source" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center gap-1.5">
+            <i data-lucide="minimize-2" class="w-3.5 h-3.5 text-amber-400"></i> Sıkıştır (Minify)
+          </button>
+          <button id="btn-convert-now" class="text-xs px-3.5 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold transition flex items-center gap-1.5 shadow-md shadow-cyan-500/20">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Şimdi Dönüştür
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Çift Bölmeli Editör (Kaynak ve Hedef) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 flex-1">
+        
+        <!-- Sol: Kaynak Format Editörü -->
+        <div class="glass-panel p-4 rounded-xl flex flex-col gap-3">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span class="font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="edit-3" class="w-4 h-4 text-cyan-400"></i> Kaynak Veri
+            </span>
+            <span class="text-slate-500">Canlı Olarak Düzenleyin</span>
+          </div>
+
+          <div class="editor-container h-96 sm:h-[450px]">
+            <div id="sandbox-source-lines" class="editor-line-numbers">1</div>
+            <textarea id="sandbox-source" class="editor-textarea" spellcheck="false" placeholder="Kaynak verinizi buraya yazın veya yapıştırın..."></textarea>
+          </div>
+
+          <!-- Sözdizim Doktoru (Syntax Doctor) -->
+          <div id="syntax-doctor-panel" class="hidden">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Sağ: Hedef Çıktı -->
+        <div class="glass-panel p-4 rounded-xl flex flex-col gap-3">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span class="font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="terminal" class="w-4 h-4 text-emerald-400"></i> Dönüştürülmüş Çıktı
+            </span>
+            <div class="flex items-center gap-2">
+              <button id="btn-copy-target" class="hover:text-cyan-400 transition flex items-center gap-1">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i> Kopyala
+              </button>
+              <span>•</span>
+              <button id="btn-download-target" class="hover:text-emerald-400 transition flex items-center gap-1">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> İndir
+              </button>
+            </div>
+          </div>
+
+          <div class="editor-container h-96 sm:h-[450px]">
+            <div id="sandbox-target-lines" class="editor-line-numbers">1</div>
+            <textarea id="sandbox-target" class="editor-textarea bg-slate-950/40 text-emerald-200" readonly spellcheck="false" placeholder="Dönüştürülmüş çıktı burada görüntülenecek..."></textarea>
+          </div>
+
+          <div class="text-[11px] text-slate-500 flex items-center justify-between">
+            <span>Dönüştürme motoru: js-yaml &amp; DOMParser Native XML &amp; JSON Engine</span>
+            <span class="text-emerald-400/80">Tam Çift Yönlü Destek</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: VISUAL TREE VIEW (GÖRSEL AĞAÇ İNCELEYİCİ) -->
+    <!-- ======================================================== -->
+    <div data-tab-panel="tree" class="hidden flex flex-col lg:flex-row gap-4 flex-1">
+      
+      <!-- Sol: Kaynak Girdi -->
+      <div class="w-full lg:w-96 glass-panel p-4 rounded-xl flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+            <i data-lucide="file-code" class="w-4 h-4 text-cyan-400"></i> Veri Kaynağı
+          </h2>
+          <select id="tree-format-select" class="bg-slate-900 border border-slate-700 text-xs rounded px-2 py-1 outline-none text-cyan-300">
+            <option value="json">JSON</option>
+            <option value="yaml">YAML</option>
+            <option value="xml">XML</option>
+          </select>
+        </div>
+
+        <p class="text-xs text-slate-400">Ağaç yapısını incelemek istediğiniz herhangi bir JSON, YAML veya XML metnini buraya girin:</p>
+
+        <textarea id="tree-source-input" class="w-full flex-1 min-h-[300px] bg-slate-950 border border-slate-800 rounded-lg p-3 text-xs font-mono text-slate-200 outline-none focus:border-cyan-500/50 resize-none" placeholder="Veriyi yapıştırın..."></textarea>
+
+        <div id="tree-error-banner" class="hidden text-xs p-2.5 rounded bg-rose-950/60 border border-rose-500/40 text-rose-300"></div>
+      </div>
+
+      <!-- Sağ: Ağaç Görünümü -->
+      <div class="flex-1 glass-panel p-4 rounded-xl flex flex-col gap-3">
+        
+        <!-- Üst Toolbar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+          <div class="flex items-center gap-3">
+            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+              <i data-lucide="git-fork" class="w-4 h-4 text-emerald-400"></i> Hiyerarşik Veri Ağacı
+            </h2>
+            <div class="flex items-center gap-1.5">
+              <button id="btn-tree-expand" class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Tümünü Aç</button>
+              <button id="btn-tree-collapse" class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700">Tümünü Kapat</button>
+            </div>
+          </div>
+
+          <!-- Arama Filtresi -->
+          <div class="relative w-full sm:w-64">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2.5"></i>
+            <input type="text" id="tree-search-input" placeholder="Düğüm veya değer ara..." class="w-full bg-slate-900 border border-slate-700 text-xs rounded-lg pl-8 pr-3 py-1.5 outline-none focus:border-cyan-500 text-slate-200">
+          </div>
+        </div>
+
+        <!-- Ağaç İçeriği -->
+        <div id="visual-tree-container" class="flex-1 bg-slate-950/50 rounded-lg p-4 overflow-auto border border-slate-800/80 min-h-[450px]">
+          <!-- Dynamically populated tree -->
+        </div>
+
+        <!-- Lejant / Renk Kodları -->
+        <div class="flex flex-wrap items-center gap-3 text-[11px] text-slate-400 pt-1">
+          <span class="font-bold text-slate-300">Düğüm Tipleri:</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span> Object</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Array</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> String</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span> Number</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Boolean</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-slate-500"></span> Null</span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: CHEAT SHEET & FORMAT COMPARISON (HİLE KİTABI) -->
+    <!-- ======================================================== -->
+    <div data-tab-panel="cheatsheet" class="hidden flex flex-col gap-6 flex-1">
+      
+      <!-- Karşılaştırma Matrisi -->
+      <div class="glass-panel p-6 rounded-xl flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
+            <i data-lucide="scale" class="w-5 h-5 text-indigo-400"></i> Büyük Format Karşılaştırması: JSON vs YAML vs XML
+          </h2>
+          <span class="text-xs text-slate-400">Doğru yerde doğru formatı seçin</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr class="border-b border-slate-700 bg-slate-900/80 text-slate-300 font-semibold">
+                <th class="p-3">Özellik</th>
+                <th class="p-3 text-cyan-400">JSON (JavaScript Object Notation)</th>
+                <th class="p-3 text-emerald-400">YAML (Ain't Markup Language)</th>
+                <th class="p-3 text-amber-400">XML (eXtensible Markup Language)</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800 text-slate-300">
+              <tr>
+                <td class="p-3 font-semibold text-slate-200">Okunabilirlik (İnsan Gözü)</td>
+                <td class="p-3">İyi (Süslü parantezler ve virgüller var)</td>
+                <td class="p-3 text-emerald-300 font-semibold">Mükemmel (Girintiyle temiz hiyerarşi)</td>
+                <td class="p-3 text-slate-400">Düşük (Etiketler çok fazla yer kaplar)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-slate-200">Yorum Satırı Desteği</td>
+                <td class="p-3 text-rose-400 font-bold">YASAK (Desteklemez)</td>
+                <td class="p-3 text-emerald-400 font-bold">EVET (# ile yorum)</td>
+                <td class="p-3 text-emerald-400 font-bold">EVET (&lt;!-- yorum --&gt;)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-slate-200">Dosya Boyutu & Hız</td>
+                <td class="p-3 text-cyan-300 font-semibold">Çok Hafif, Son Derece Hızlı</td>
+                <td class="p-3">Hafif fakat Ayrıştırması Yavaş</td>
+                <td class="p-3 text-slate-400">Ağır (Tekrarlanan etiketler)</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-slate-200">Desteklenen Veri Tipleri</td>
+                <td class="p-3">String, Number, Boolean, Array, Object, Null</td>
+                <td class="p-3">Tüm temel tipler + Tarih + İkili Veri + Özel Tipler</td>
+                <td class="p-3 text-slate-400">Yalnızca Metin (String) - Tipler için XSD gerekir</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-slate-200">Yaygın Kullanım Alanı</td>
+                <td class="p-3 text-cyan-300">REST API'ler, Web Servisleri, NoSQL DB (MongoDB)</td>
+                <td class="p-3 text-emerald-300">DevOps (Docker, Kubernetes, GitHub Actions, Ansible)</td>
+                <td class="p-3 text-amber-300">SOAP API, Kurumsal Bankacılık, RSS, SVG, Android Manifest</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-slate-200">Şema Doğrulama (Schema)</td>
+                <td class="p-3">JSON Schema</td>
+                <td class="p-3">K8s CRD / Kubeval / JSON Schema</td>
+                <td class="p-3 text-emerald-300 font-semibold">XSD, DTD (Çok Güçlü ve Katı)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Formatların Püf Noktaları ve Kritik Tuzakları -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- JSON Kartı -->
+        <div class="glass-card p-5 rounded-xl border border-cyan-500/20 flex flex-col gap-3">
+          <div class="flex items-center gap-2 text-cyan-400 font-bold">
+            <span class="w-3 h-3 rounded-full bg-cyan-400"></span>
+            <h3>JSON Kritik Kuralları</h3>
+          </div>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            <li><strong class="text-cyan-300">1. Çift Tırnak Şartı:</strong> Tüm anahtar isimleri ("key") ve metin değerler çift tırnaklı olmalıdır. Tek tırnak geçersizdir.</li>
+            <li><strong class="text-cyan-300">2. Sonda Virgül Yasak:</strong> Son elemandan sonra virgül bırakmak (trailing comma) ayrıştırıcıyı patlatır: <code class="text-rose-400 font-mono">{"a": 1,}</code> HATALIDIR.</li>
+            <li><strong class="text-cyan-300">3. Yorum Yapılamaz:</strong> JSON saf veri taşımak içindir; <code class="text-rose-400 font-mono">//</code> veya <code class="text-rose-400 font-mono">/* */</code> koyamazsınız.</li>
+            <li><strong class="text-cyan-300">4. Desteklenmeyenler:</strong> <code class="text-slate-400">undefined</code>, fonksiyonlar veya <code class="text-slate-400">NaN</code> bulunamaz. Boş değer için <code class="text-amber-400">null</code> kullanılır.</li>
+          </ul>
+        </div>
+
+        <!-- YAML Kartı -->
+        <div class="glass-card p-5 rounded-xl border border-emerald-500/20 flex flex-col gap-3">
+          <div class="flex items-center gap-2 text-emerald-400 font-bold">
+            <span class="w-3 h-3 rounded-full bg-emerald-400"></span>
+            <h3>YAML Kritik Kuralları</h3>
+          </div>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            <li><strong class="text-emerald-300">1. TAB Tuşu Yasaktır:</strong> Girintileme için daima boşluk (space) tuşu kullanın. Genelde 2 boşluk standarttır.</li>
+            <li><strong class="text-emerald-300">2. İki Nokta Boşluğu:</strong> Anahtar sonrasındaki iki noktadan sonra mutlaka bir boşluk olmalıdır: <code class="text-emerald-300 font-mono">port: 80</code> (port:80 yanlıştır).</li>
+            <li><strong class="text-emerald-300">3. Norveç Tuzağı (NO):</strong> Tırnaksız <code class="text-rose-400 font-mono">NO</code> yazarsanız, YAML 1.1 bunu boolean <code class="text-rose-400 font-mono">false</code> yapar! Tırnak kullanın: <code class="text-emerald-300 font-mono">"NO"</code>.</li>
+            <li><strong class="text-emerald-300">4. DRY Miras Alma:</strong> Tekrarlanan yapıları <code class="text-amber-300 font-mono">&amp;anchor</code> ile işaretleyip <code class="text-amber-300 font-mono">&lt;&lt;: *anchor</code> ile kopyalayabilirsiniz.</li>
+          </ul>
+        </div>
+
+        <!-- XML Kartı -->
+        <div class="glass-card p-5 rounded-xl border border-amber-500/20 flex flex-col gap-3">
+          <div class="flex items-center gap-2 text-amber-400 font-bold">
+            <span class="w-3 h-3 rounded-full bg-amber-400"></span>
+            <h3>XML Kritik Kuralları</h3>
+          </div>
+          <ul class="text-xs text-slate-300 space-y-2 leading-relaxed">
+            <li><strong class="text-amber-300">1. Tek Kök (Root) Eleman:</strong> Tüm XML dökümanı mutlaka en dışta tek bir ana kapsayıcı etikete sahip olmalıdır.</li>
+            <li><strong class="text-amber-300">2. Eksiksiz Kapanış:</strong> Her etiket kapanmalıdır: <code class="text-amber-300 font-mono">&lt;item&gt;...&lt;/item&gt;</code> ya da kendi kendine kapanan <code class="text-amber-300 font-mono">&lt;br/&gt;</code>.</li>
+            <li><strong class="text-amber-300">3. Büyük/Küçük Harf Duyarlılığı:</strong> <code class="text-rose-400 font-mono">&lt;Title&gt;</code> ile <code class="text-rose-400 font-mono">&lt;/title&gt;</code> eşleşmez; etiket isimleri birebir aynı olmalıdır.</li>
+            <li><strong class="text-amber-300">4. CDATA Bloğu:</strong> İçerisinde &lt;, &gt;, &amp; sembolleri olan metinler için <code class="text-amber-300 font-mono">&lt;![CDATA[ ... ]]&gt;</code> kullanılır.</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- Footer -->
+  <!-- ======================================================== -->
+  <footer class="border-t border-slate-900 bg-slate-950 py-4 px-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <div>FormatMaster • JSON, YAML ve XML Ustalaşma Platformu</div>
+      <div class="flex items-center gap-4 text-slate-400">
+        <span>Geliştirici Dostu</span>
+        <span>•</span>
+        <span>Sıfır Bağımlılık</span>
+        <span>•</span>
+        <span>Yerel Olarak Çalışır</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- Çözüm Modalı (Solution Modal) -->
+  <!-- ======================================================== -->
+  <div id="solution-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Modal Header -->
+      <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 font-bold">
+            <i data-lucide="key" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+              <span>Çözüm Rehberi</span>
+              <span id="modal-solution-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 uppercase">JSON</span>
+            </h3>
+            <p id="modal-solution-title" class="text-xs text-slate-400">Görev Başlığı</p>
+          </div>
+        </div>
+        <button id="btn-close-modal" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-5 overflow-y-auto flex-1 flex flex-col gap-4">
+        <div>
+          <div class="text-xs font-bold text-slate-300 mb-1 flex items-center gap-1.5">
+            <i data-lucide="code" class="w-4 h-4 text-emerald-400"></i> Doğru Çözüm Kodu:
+          </div>
+          <div class="editor-container h-56">
+            <div id="modal-solution-lines" class="editor-line-numbers">1</div>
+            <textarea id="modal-solution-code" class="editor-textarea text-emerald-300 bg-slate-950/60 font-mono text-xs" readonly spellcheck="false"></textarea>
+          </div>
+        </div>
+
+        <!-- Detaylı Çözüm Açıklaması -->
+        <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800/80 text-xs">
+          <div class="font-bold text-amber-400 mb-1 flex items-center gap-1.5">
+            <i data-lucide="lightbulb" class="w-4 h-4"></i> Neden Bu Çözüm? (Mantık & Kural):
+          </div>
+          <p id="modal-solution-explanation" class="text-slate-300 leading-relaxed"></p>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-slate-800 bg-slate-950/70 flex items-center justify-between gap-3">
+        <button id="btn-modal-close-footer" class="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition">
+          Vazgeç / Kapat
+        </button>
+        <div class="flex items-center gap-2">
+          <button id="btn-modal-copy-solution" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span>Kopyala</span>
+          </button>
+          <button id="btn-modal-apply-solution" class="px-4 py-2 rounded-lg text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-slate-950 transition flex items-center gap-1.5 shadow-lg shadow-cyan-500/20">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            <span>Editöre Aktar &amp; Uygula</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Scripts -->
+  <script src="js/converter.js"></script>
+  <script src="js/challenges.js"></script>
+  <script src="js/guides.js"></script>
+  <script src="js/tree-view.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
